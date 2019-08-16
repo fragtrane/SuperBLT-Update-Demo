@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<head>
+<title>Hosting SuperBLT Mod Updates on GitHub</title>
+<link rel="stylesheet" type="text/css" href="/SuperBLT-Update-Demo/style.css">
+<style type="text/css">
+body, html {
+    background-color: #cfcfcf;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+#mainContainer {
+    background-color: #ffffff;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 900px;
+    border-color: #afafaf;
+    border-style: solid;
+    border-width: 1px;
+    padding: 40px;
+}
+</style>
+</head>
+<body>
+<div id="mainContainer" class="markdown-body">
+<h1>Hosting SuperBLT Mod Updates on GitHub</h1>
+<p><i>Published 2019-08-16. Last updated 2019-08-16.</i></p>
+<p>This GitHub webage and its <a href="https://github.com/fragtrane/SuperBLT-Update-Demo">associated repository</a> serve as an example of how automatic updates can be hosted for SuperBLT.</p>
+<p><b>Contents:</b></p>
+<ol>
+<a href="#section_1"><li>SuperBLT Automatic Update Specifications</li></a>
+<a href="#section_2"><li>Setting Up a GitHub Repository for Updates</li></a>
+<a href="#section_3"><li>Setting Up Updates for mod_overrides</li></a>
+</ol>
+<a id="section_1"><h2>1. SuperBLT Automatic Update Specifications</h2></a>
+<h3>Updates Tag</h3>
+<p>As specified in the <a href="https://superblt.znix.xyz/doc/updates/">automatic updates documentation</a> of SuperBLT, an <code>updates</code> tag should be added to the <code>mod.txt</code>. The example below is taken from the documentation.</p>
+<pre><code>"updates" : [
+	{
+		"identifier" : "anythingyouwant",
+		"host": {
+			"meta" : "https://example.com/my_meta.json"<span style="color: #DD0000; background-color: rgba(255,0,0,.2)"><s>,</s></span>
+			<span style="color: #DD0000; background-color: rgba(255,0,0,.2)"><s>"download" : "https://example.com/download.zip",</s></span>
+			<span style="color: #DD0000; background-color: rgba(255,0,0,.2)"><s>"patchnotes" : "https://example.com/patchnotes.html"</s></span>
+		}
+	}
+]
+</code></pre>
+<p><code>identifier</code> is a unique identifier for the mod and can be anything as long as it is unique. <b><i>The identifier is difficult to change later so choose it carefully.</i></b></p>
+<p><code>meta</code> links to a JSON file which contains some information about the latest version of the mod. This can be hosted on GitHub. <b><i>The meta file link is difficult to change later so choose where you want to host it carefully.</i></b> This is discussed further in Section 2.</p>
+<p>I recommend that you omit <code>download</code> and <code>patchnotes</code> from the <code>mod.txt</code>. This is because the download link and patch notes can also be provided in the meta file and these values take precendence over the values in the <code>mod.txt</code>. This way, even if the download link changes between updates, the meta file can always direct the user to the correct link.</p>
+<h3>Meta File</h3>
+<p>The format of an example meta file taken from the documentation is given below.</p>
+<pre><code>[
+    {
+        "ident" : "anythingyouwant",
+        "hash" : "43e7cd36567c755be88e60bde45ba418527c692af982d45fbedb8b5a8c792772",
+        "patchnotes_url" : "https://example.com/other-patchnotes.html",
+        "download_url" : "https://example.com/other-download.zip"
+    }
+]
+</code></pre>
+<p><code>ident</code> must match the <code>identifier</code> in the mod.txt.</p>
+<p><code>hash</code> is the <b><i>folder hash value</i></b> of the latest version of the mod as defined by the <a href="https://gitlab.com/SuperBLT/HashLib">hashing system used in SuperBLT</a>. <b><i>It is NOT the hash of the .ZIP archive specified in the download link.</i></b> Details on how the hash is calculated and a tool for calculating hashes can be found at the repository for my <a href="https://github.com/fragtrane/Python-SuperBLT-Hash-Calculator">Python SuperBLT Hash Calculator</a>.</p>
+<p><code>patchnotes_url</code> links to the patch notes of the latest version of the mod. This can be hosted on GitHub Pages.</p>
+<p><code>download_url</code> links to the .ZIP archive of the latest version of the mod. This can be hosted on GitHub.</p>
+<h3>Update Process</h3>
+<p>The following is a high-level description of the update process of SuperBLT.</p>
+<p>To check for updates, the currently installed version of the mod is hashed and is compared with the server hash value (the hash value in the meta file). If these values do not match, it is assumed that the current version of the mod is outdated. <b><i>Note that this means making any changes to the currently installed mod will cause it to be detected as outdated.</i></b></p>
+<p>When an update is initiated, the new version of the mod is downloaded from the <code>download_url</code> and the contents of the .ZIP archive are extracted. The hash of the extracted contents is then calculated and verified against the server hash value. <b><i>If the hash of the extracted contents does not match the server hash, the update will fail.</i></b> If the verification is successful, the old installation files are removed and replaced by the extracted files.</p>
+<a id="section_2"><h2>2. Setting Up a GitHub Repository for Updates</h2></a>
+<p>The repository of this webpage is an example of how a GitHub repository can be used to host SuperBLT updates. The repository can be <a href="https://github.com/fragtrane/SuperBLT-Update-Demo">viewed here</a>.</p>
+<h3>Folders</h3>
+<p>To keep things organized, I recommend making a new folder for each mod you want to host updates for. In this example, the mod is called "Dummy Mod" and the folder in the repository is named <code><a href="https://github.com/fragtrane/SuperBLT-Update-Demo/tree/master/Dummy%20Mod">Dummy Mod</a></code> as well. You could also use the mod identifier as the folder name; in fact, you can choose anything as long as you can keep track of which mod the folder corresponds to.</p>
+<h3>Patch Notes</h3>
+<p>In this example, all of the patch notes are placed in a subfolder called <code><a href="https://github.com/fragtrane/SuperBLT-Update-Demo/tree/master/Dummy%20Mod/patchnotes">patchnotes</a></code>. I recommend that you make a new patch notes document for each update to keep things organized.</p>
+<p>Patch notes in HTML format can be hosted via GitHub Pages. To enable GitHub Pages, go into the repository settings, scroll down to the GitHub Pages section, and change the source to "master branch". The patch notes for Dummy Mod v2.0 can now be viewed at:</p>
+<pre><code>https://fragtrane.github.io/SuperBLT-Update-Demo/Dummy%20Mod/patchnotes/v2.0.html</code>
+</pre>
+<p>The layout of the HTML documents was copied from the <a href="http://download.paydaymods.com/download/patchnotes/blackmarketpersistentnames">patch notes used by PaydayMods</a>. I also <a href="https://github.com/fragtrane/SuperBLT-Update-Demo/blob/master/style.css">re-uploaded their stylesheet</a> to this repository to make it easy to change things later and in case something happens to the PaydayMods site. Note that in order to use an uploaded style sheet, you need to reference its GitHub Pages URL. In this example, the full URL is:</p>
+<pre><code>https://fragtrane.github.io/SuperBLT-Update-Demo/style.css
+</code></pre>
+<h3>Download Link</h3>
+<p>The download for the latest version of the mod should be a .ZIP archive. The archive should contain the folder that needs to be placed inside the BLT <code>mods</code> folder. You can host this archive wherever you like, but it is probably easiest just to host it on GitHub.</p>
+<p>In this example, the archive is hosted in the <code>Dummy Mod</code> folder of the repository. The latest version of the mod is v2.0 and the archive is named <code><a href="https://github.com/fragtrane/SuperBLT-Update-Demo/blob/master/Dummy%20Mod/Dummy_Mod_v2.0.zip">Dummy_Mod_v2.0.zip</a></code>. To get the download link, just replace <code>blob</code> with <code>raw</code> in the URL:</p>
+<pre><code>https://github.com/fragtrane/SuperBLT-Update-Demo/<span style="color: #DD0000; background-color: rgba(255,0,0,.2)"><s>blob</s></span>/master/Dummy%20Mod/Dummy_Mod_v2.0.zip
+https://github.com/fragtrane/SuperBLT-Update-Demo/<span style="color: #008000; background-color: rgba(0,255,0,.2)">raw</span>/master/Dummy%20Mod/Dummy_Mod_v2.0.zip
+</code></pre>
+<p>The archive for v1.0 can also be found in the <code>Dummy Mod</code> folder and is named <code><a href="https://github.com/fragtrane/SuperBLT-Update-Demo/blob/master/Dummy%20Mod/Dummy_Mod_v1.0.zip">Dummy_Mod_v1.0.zip</a></code>. You can download this older version if you want to see the update process in action.</p>
+<h3>Meta File</h3>
+<p>Once you decide where to host the meta file, you should not change the location anymore. This way, all versions of the mod will point to the same meta file which will always direct the user to the latest version of the mod. So even if users miss several updates, they will still be able to update their mod.</p>
+<p>In this example, the meta file is placed in the <code>Dummy Mod</code> folder and is named <code><a href="https://github.com/fragtrane/SuperBLT-Update-Demo/blob/master/Dummy%20Mod/latest.json">latest.json</a></code>. For the <code>mod.txt</code>, you need to use the raw URL of the meta file. Simply replace <code>blob</code> with <code>raw</code> in the URL:</p>
+<pre><code>https://github.com/fragtrane/SuperBLT-Update-Demo/<span style="color: #DD0000; background-color: rgba(255,0,0,.2)"><s>blob</s></span>/master/Dummy%20Mod/latest.json
+https://github.com/fragtrane/SuperBLT-Update-Demo/<span style="color: #008000; background-color: rgba(0,255,0,.2)">raw</span>/master/Dummy%20Mod/latest.json
+</code></pre>
+<p>As mentioned before, there are four values in the meta file:</p>
+<ul>
+<li><code>ident</code> needs to match the <code>identifier</code> in the <code>mod.txt</code>. In this example, it is "DummyMod".</li>
+<li><code>hash</code> is the folder hash value of the latest version of the mod. This is calculated by hashing the folder that contains the mod. You can do this using my <a href="https://github.com/fragtrane/Python-SuperBLT-Hash-Calculator">Python SuperBLT Hash Calculator</a>.</li>
+<li><code>patchnotes_url</code> and <code>download_url</code> are the URLs discussed in the previous two sections.</li>
+</ul>
+<h3>Pushing a New Update</h3>
+<p>The repository is now ready. The following steps need to be taken when pushing a new update:</p>
+<ol>
+<li>Calculate the hash of the new version of your mod.</li>
+<li>Upload a .ZIP archive of the new version of your mod.</li>
+<li>Upload the patch notes for the new version of your mod.</li>
+<li>Update the values in the meta file to match the new version of your mod.</li>
+<ul>
+<li><code>hash</code></li>
+<li><code>patchnotes_url</code></li>
+<li><code>download_url</code></li>
+</ul>
+<li>(Optional) If you have uploaded your mod to other websites (e.g. Mod Workshop), update the download link to the latest version of your mod.</li>
+<li>(Optional) Remove the .ZIP archive of the older version of your mod from the repository. Old patch notes can be kept for archiving purposes or removed as well.</li>
+</li>
+</ol>
+<a id="section_3"><h2>3. Setting Up Updates for mod_overrides</h2></a>
+<h3>Updates Tag</h3>
+<p>It is also possible to use a BLT mod to update a mod_overrides mod. In order to do so, the <code>updates</code> tag in the <code>mod.txt</code> needs to be extended as seen in the example below.</p>
+<pre><code>"updates" : [
+	{
+		"identifier" : "anythingyouwant"<span style="color: #008000; background-color: rgba(0,255,0,.2)">,</span>
+		<span style="color: #008000; background-color: rgba(0,255,0,.2)">"install_dir" : "assets/mod_overrides/",</span>
+		<span style="color: #008000; background-color: rgba(0,255,0,.2)">"install_folder" : "Folder That Contains the Mod",</span>
+		<span style="color: #008000; background-color: rgba(0,255,0,.2)">"display_name" : "Name to Display in Update Manager",</span>
+		"host": {
+			"meta" : "https://example.com/my_meta.json"
+		}
+	}
+]
+</code></pre>
+<p><code>install_dir</code> is the path where the mod is installed i.e. the <code>mod_overrides</code> folder.</p>
+<p><code>install_folder</code> is the folder that contains the mod (i.e. the folder that you put inside the <code>mod_overrides</code> folder). If this folder does not exist, updates cannot be checked. But if you create an empty folder with this name, updates will work and the newest version of the mod will be downloaded.</p>
+<p><code>display_name</code> is the name that will be displayed in the update manager.</p>
+<h3>mod_overrides Update Example</h3>
+<p>In this example, automatic updates will be set up for a mod_overrides mod named "Dummy Override". The corresponding folder in the GitHub respository is also named <code><a href="https://github.com/fragtrane/SuperBLT-Update-Demo/tree/master/Dummy%20Override">Dummy Override</a></code>. The patch notes and meta file are set up in the same manner as described in Section 2. The mod has the identifier "DummyOverride".</p>
+<p>There are two Dummy Override .ZIP archives on the repository: <code><a href="https://github.com/fragtrane/SuperBLT-Update-Demo/blob/master/Dummy%20Override/Dummy_Override_v2.0.zip">Dummy_Override_v2.0.zip</a></code> and <code><a href="https://github.com/fragtrane/SuperBLT-Update-Demo/blob/master/Dummy%20Override/Dummy_Override_v1.0.zip">Dummy_Override_v1.0.zip</a></code>. v2.0 is the latest version; v1.0 is an older version that you can download if you want to see the update process in action. The .ZIP archive contains a folder named <code>Dummy Override</code> which needs to be extracted to the <code>mod_overrides</code> folder.</p>
+<p>A BLT mod called "Dummy Override Updater" is used for updates and can be found in <code><a href="https://github.com/fragtrane/SuperBLT-Update-Demo/blob/master/Dummy%20Override/Dummy_Override_Updater.zip">Dummy_Override_Updater.zip</a></code>. Dummy Override Updater only contains a <code>mod.txt</code> with an updates tag which has the following values:</p>
+<ul>
+<li><code>identifier</code> must match the <code>ident</code> in the meta file. In this example, it is "DummyOverride".</li>
+<li><code>install_dir</code> is the path where the mod is installed i.e. the <code>mod_overrides</code> folder.</li>
+<li><code>install_folder</code> is the containing folder of the mod. In this example, it is "Dummy Override".</li>
+<li><code>display_name</code> is the name that will be displayed in the update manager. In this example, it is "Dummy Override".</li>
+<li><code>meta</code> is the link to the JSON meta file.</li>
+</ul>
+<p>Dummy Override Updater can be installed to the BLT <code>mods</code> folder. Dummy Override can now be updated like a normal BLT mod. When the game is started, Dummy Override Updater will check the <code>mod_overrides</code> folder to see if Dummy Override is up-to-date by hashing the folder and comparing it with the hash in the meta file. If the hashes do not match, it will be added to the update manager.</p>
+</div>
+</body>
+</html>
