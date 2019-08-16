@@ -6,6 +6,6 @@ This repository serves as an example of how automatic updates can be hosted for 
 
 ## Changelog
 
-**2019-08-08**
+**2019-08-16**
 
 - Initial publication.
